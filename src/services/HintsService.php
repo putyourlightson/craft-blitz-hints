@@ -155,6 +155,8 @@ class HintsService extends Component
 
                 if ($template instanceof Template) {
                     $path = $template->getSourceContext()->getPath();
+                    $path = str_replace(Craft::getAlias('@templates/'), '', $path);
+
                     $templateCodeLine = $traces[$key - 1]['line'] ?? null;
                     $line = $this->_findTemplateLine($template, $templateCodeLine);
 
