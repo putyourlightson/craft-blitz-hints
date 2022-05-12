@@ -1,0 +1,53 @@
+<form action="" method="post">
+
+    {{ csrfInput() }}
+
+    {% if hints|length %}
+        <div class="buttons first">
+            <a class="btn submit formsubmit" data-action="blitz-hints/hints/clear-all">
+                {{ "Clear all"|t('app') }}
+            </a>
+        </div>
+    {% endif %}
+
+
+    <div class="readable">
+        <p id="nohints" class="zilch {% if hints|length %}hidden{% endif %}">
+            No hints to report!
+        </p>
+
+        {% if hints|length %}
+            <table id="hints" class="data fullwidth fixed-layout">
+                <thead>
+                    <tr>
+                        <th>Hint</th>
+                        <th>Template</th>
+                        <th class="nowrap">Last Occurrence</th>
+                        <th style="width: 14px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for hint in hints %}
+                    <tr data-id="{{ hint.id }}">
+                        <td>
+                            {{ hint.message|md|replace({'<p>': '', '</p>': ''})|raw }}
+                            {% if hint.info %}
+                                <span class="info" style="vertical-align: top;">{{ hint.info|md|replace({'<p>': '', '</p>': ''})|raw }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="code">
+                            {{ hint.template|e|replace('/', '/<wbr>')|raw }}
+                            {{- hint.line ? ':' ~ hint.line }}
+                        </td>
+                        <td>{{ hint.dateUpdated|timestamp }}</td>
+                        <td>
+                            <a class="delete icon formsubmit" data-action="blitz-hints/hints/clear" data-param="id" data-value="{{ hint.id }}" title="{{ 'Delete'|t('app') }}" role="button"></a>
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+</form>
