@@ -1,7 +1,7 @@
 [![Stable Version](https://img.shields.io/packagist/v/putyourlightson/craft-blitz-hints?label=stable)]((https://packagist.org/packages/putyourlightson/craft-blitz-hints))
 [![Total Downloads](https://img.shields.io/packagist/dt/putyourlightson/craft-blitz-hints)](https://packagist.org/packages/putyourlightson/craft-blitz-hints)
 
-<p align="center"><img width="130" src="https://raw.githubusercontent.com/putyourlightson/craft-blitz-hints/v1/src/icon.svg"></p>
+<p align="center"><img width="130" src="https://raw.githubusercontent.com/putyourlightson/craft-blitz-hints/develop/src/icon.svg"></p>
 
 # Blitz Hints Module for Craft CMS
 
