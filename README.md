@@ -34,10 +34,6 @@ class MyPlugin extends Plugin
 }
 ```
 
-## Documentation
-
-Learn more and read the documentation at [putyourlightson.com/plugins/blitz-hints »](https://putyourlightson.com/plugins/blitz-hints)
-
 ## License
 
 This module is licensed for free under the MIT License.
