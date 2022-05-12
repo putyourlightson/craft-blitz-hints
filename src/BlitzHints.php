@@ -27,7 +27,7 @@ class BlitzHints extends Module
     /**
      * The unique ID of this module.
      */
-    public const ID = 'blitz-hints';
+    public const ID = 'blitz-hints-module';
 
     /**
      * The bootstrap process creates an instance of the module.
