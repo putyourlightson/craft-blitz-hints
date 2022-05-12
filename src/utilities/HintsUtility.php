@@ -32,7 +32,7 @@ class HintsUtility extends Utility
      */
     public static function iconPath(): ?string
     {
-        $iconPath = Craft::getAlias('@putyourlightson/blitz-hints/icon-mask.svg');
+        $iconPath = Craft::getAlias('@putyourlightson/blitzhints/icon-mask.svg');
 
         if (!is_string($iconPath)) {
             return null;
@@ -54,7 +54,7 @@ class HintsUtility extends Utility
      */
     public static function contentHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('blitz-hints/_utility', [
+        return Craft::$app->getView()->renderTemplate('blitz-hints-module/_utility', [
             'hints' => BlitzHints::getInstance()->hints->getAll(),
         ]);
     }

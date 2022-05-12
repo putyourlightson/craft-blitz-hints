@@ -50,7 +50,7 @@ class BlitzHints extends Module
         $module = new BlitzHints(self::ID);
         static::setInstance($module);
         Craft::$app->setModule(self::ID, $module);
-        Craft::setAlias('@putyourlightson/blitz-hints', __DIR__);
+        Craft::setAlias('@putyourlightson/blitzhints', __DIR__);
 
         return $module;
     }
@@ -117,7 +117,7 @@ class BlitzHints extends Module
         Event::on(
             View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
             function(RegisterTemplateRootsEvent $event) {
-                $event->roots['blitz-hints'] = $this->getBasePath() . '/templates';
+                $event->roots['blitz-hints-module'] = $this->getBasePath() . '/templates';
             }
         );
     }
