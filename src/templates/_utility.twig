@@ -4,7 +4,7 @@
 
     {% if hints|length %}
         <div class="buttons first">
-            <a class="btn submit formsubmit" data-action="blitz-hints-module/hints/clear-all">
+            <a class="btn submit formsubmit" data-action="blitz-hints/hints/clear-all">
                 {{ "Clear all"|t('app') }}
             </a>
         </div>
@@ -41,7 +41,7 @@
                         </td>
                         <td>{{ hint.dateUpdated|timestamp }}</td>
                         <td>
-                            <a class="delete icon formsubmit" data-action="blitz-hints-module/hints/clear" data-param="id" data-value="{{ hint.id }}" title="{{ 'Delete'|t('app') }}" role="button"></a>
+                            <a class="delete icon formsubmit" data-action="blitz-hints/hints/clear" data-param="id" data-value="{{ hint.id }}" title="{{ 'Delete'|t('app') }}" role="button"></a>
                         </td>
                     </tr>
                 {% endfor %}

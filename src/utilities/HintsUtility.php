@@ -54,7 +54,7 @@ class HintsUtility extends Utility
      */
     public static function contentHtml(): string
     {
-        return Craft::$app->getView()->renderTemplate('blitz-hints-module/_utility', [
+        return Craft::$app->getView()->renderTemplate('blitz-hints/_utility', [
             'hints' => BlitzHints::getInstance()->hints->getAll(),
         ]);
     }

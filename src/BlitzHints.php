@@ -27,7 +27,7 @@ class BlitzHints extends Module
     /**
      * The unique ID of this module.
      */
-    public const ID = 'blitz-hints-module';
+    public const ID = 'blitz-hints';
 
     /**
      * The bootstrap process creates an instance of the module.
@@ -117,7 +117,7 @@ class BlitzHints extends Module
         Event::on(
             View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
             function(RegisterTemplateRootsEvent $event) {
-                $event->roots['blitz-hints-module'] = $this->getBasePath() . '/templates';
+                $event->roots['blitz-hints'] = $this->getBasePath() . '/templates';
             }
         );
     }

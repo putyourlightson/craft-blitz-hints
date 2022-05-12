@@ -1,5 +1,5 @@
 {
-    "name": "putyourlightson/craft-blitz-hints-module",
+    "name": "putyourlightson/craft-blitz-hints",
     "description": "Provides templating performance hints.",
     "version": "1.0.0",
     "type": "craft-module",
@@ -14,8 +14,8 @@
         }
     },
     "support": {
-        "docs": "https://putyourlightson.com/plugins/blitz-hints",
-        "source": "https://github.com/putyourlightson/craft-blitz-hints-module",
-        "issues": "https://github.com/putyourlightson/craft-blitz-hints-module/issues"
+        "docs": "https://github.com/putyourlightson/craft-blitz-hints",
+        "source": "https://github.com/putyourlightson/craft-blitz-hints",
+        "issues": "https://github.com/putyourlightson/craft-blitz-hints/issues"
     }
 }
