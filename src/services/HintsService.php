@@ -92,23 +92,7 @@ class HintsService extends Component
     }
 
     /**
-     * Adds a hint.
-     */
-    public function add(int $fieldId, string $message, string $info = ''): void
-    {
-        [$path, $line] = $this->_getTemplatePathLine();
-
-        $this->_hints[$fieldId . '-' . $path] = new HintModel([
-            'key' => $fieldId,
-            'template' => $path,
-            'line' => $line,
-            'message' => $message,
-            'info' => $info,
-        ]);
-    }
-
-    /**
-     * Saves hints.
+     * Saves any hints that have been prepared.
      *
      * @noinspection MissedFieldInspection
      */
@@ -121,13 +105,7 @@ class HintsService extends Component
                 ->upsert(
                     HintRecord::tableName(),
                     [
-                        'key' => $hint->key,
-                        'template' => $hint->template,
-                        'line' => $hint->line,
-                        'message' => $hint->message,
-                        'info' => $hint->info,
-                    ],
-                    [
+                        'fieldId' => $hint->fieldId,
                         'template' => $hint->template,
                         'line' => $hint->line,
                         'message' => $hint->message,
@@ -135,37 +113,6 @@ class HintsService extends Component
                     ])
                 ->execute();
         }
-    }
-
-    /**
-     * Returns the path and line number of the rendered template.
-     */
-    private function _getTemplatePathLine(): array
-    {
-        // Get the debug backtrace
-        $traces = debug_backtrace();
-
-        // Get template class filename
-        $reflector = new ReflectionClassAlias(Template::class);
-        $filename = $reflector->getFileName();
-
-        foreach ($traces as $key => $trace) {
-            if (!empty($trace['file']) && $trace['file'] == $filename) {
-                $template = $trace['object'] ?? null;
-
-                if ($template instanceof Template) {
-                    $path = $template->getSourceContext()->getPath();
-                    $path = str_replace(Craft::getAlias('@templates/'), '', $path);
-
-                    $templateCodeLine = $traces[$key - 1]['line'] ?? null;
-                    $line = $this->_findTemplateLine($template, $templateCodeLine);
-
-                    return [$path, $line];
-                }
-            }
-        }
-
-        return ['', null];
     }
 
     /**
@@ -192,7 +139,7 @@ class HintsService extends Component
                 return;
             }
 
-            $this->_addField($fieldId);
+            $this->_addFieldHint($fieldId);
         }
     }
 
@@ -208,13 +155,13 @@ class HintsService extends Component
 
         $fieldId = is_array($elementQuery->fieldId) ? $elementQuery->fieldId[0] : $elementQuery->fieldId;
 
-        $this->_addField($fieldId);
+        $this->_addFieldHint($fieldId);
     }
 
     /**
      * Adds a field hint.
      */
-    private function _addField(int $fieldId): void
+    private function _addFieldHint(int $fieldId): void
     {
         $field = Craft::$app->getFields()->getFieldById($fieldId);
 
@@ -222,12 +169,54 @@ class HintsService extends Component
             return;
         }
 
-        $message = 'Eager-load the `' . $field->name . '` field.';
-        $info = 'Use the `with` parameter to eager-load sub-elements of the `' . $field->name . '` field.<br>'
+        $hint = $this->_getHintWithTemplateLine();
+
+        if ($hint === null) {
+            return;
+        }
+
+        $hint->fieldId = $fieldId;
+        $hint->message = 'Eager-load the `' . $field->name . '` field.';
+        $hint->info = 'Use the `with` parameter to eager-load sub-elements of the `' . $field->name . '` field.<br>'
             . '`{% set entries = craft.entries.with([\'' . $field->handle . '\']).all() %}`<br>'
             . '<a href="https://craftcms.com/docs/4.x/dev/eager-loading-elements.html" class="go" target="_blank">Docs</a>';
 
-        $this->add($fieldId, $message, $info);
+        $this->_hints[$fieldId . $hint->template . $hint->line] = $hint;
+    }
+
+    /**
+     * Returns a new hint with the template and line number of the rendered template.
+     */
+    private function _getHintWithTemplateLine(): ?HintModel
+    {
+        // Get the debug backtrace
+        $traces = debug_backtrace();
+
+        // Get template class filename
+        $reflector = new ReflectionClassAlias(Template::class);
+        $filename = $reflector->getFileName();
+
+        foreach ($traces as $key => $trace) {
+            if (!empty($trace['file']) && $trace['file'] == $filename) {
+                $templateObject = $trace['object'] ?? null;
+
+                if ($templateObject instanceof Template) {
+                    $path = $templateObject->getSourceContext()->getPath();
+                    $template = str_replace(Craft::getAlias('@templates/'), '', $path);
+                    $templateCodeLine = $traces[$key - 1]['line'] ?? null;
+                    $line = $this->_findTemplateLine($templateObject, $templateCodeLine);
+
+                    if ($template && $line) {
+                        return new HintModel([
+                            'template' => $template,
+                            'line' => $line,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     /**

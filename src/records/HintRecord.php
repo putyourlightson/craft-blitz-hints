@@ -10,7 +10,7 @@ use DateTime;
 
 /**
  * @property int $id
- * @property string $key
+ * @property int $fieldId
  * @property string $template
  * @property string $line
  * @property string $message

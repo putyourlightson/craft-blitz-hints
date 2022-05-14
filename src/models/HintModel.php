@@ -16,9 +16,9 @@ class HintModel extends Model
     public ?int $id = null;
 
     /**
-     * @var string|null
+     * @var int|null
      */
-    public ?string $key = null;
+    public ?int $fieldId = null;
 
     /**
      * @var string|null

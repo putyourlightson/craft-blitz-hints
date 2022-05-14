@@ -18,7 +18,7 @@ class Install extends Migration
         if (!$this->db->tableExists(HintRecord::tableName())) {
             $this->createTable(HintRecord::tableName(), [
                 'id' => $this->primaryKey(),
-                'key' => $this->string()->notNull(),
+                'fieldId' => $this->integer(),
                 'template' => $this->string(),
                 'line' => $this->integer(),
                 'message' => $this->text(),
@@ -28,7 +28,7 @@ class Install extends Migration
                 'uid' => $this->uid(),
             ]);
 
-            $this->createIndex(null, HintRecord::tableName(), ['key', 'template'], true);
+            $this->createIndex(null, HintRecord::tableName(), ['fieldId', 'template', 'line'], true);
         }
 
         return true;
