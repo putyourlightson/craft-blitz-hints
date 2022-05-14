@@ -169,13 +169,13 @@ class HintsService extends Component
             return;
         }
 
-        $hint = $this->_getHintWithTemplateLine();
+        $hint = $this->_getHintWithTemplateLine($field->handle);
 
         if ($hint === null) {
             return;
         }
 
-        $key = $fieldId . $hint->template;
+        $key = $fieldId . '-' . $hint->template;
 
         // Don't continue if a hint with the key already exists.
         if (!empty($this->_hints[$key])) {
@@ -185,7 +185,7 @@ class HintsService extends Component
         $hint->fieldId = $fieldId;
         $hint->message = 'Eager-load the `' . $field->name . '` field.';
         $hint->info = 'Use the `with` parameter to eager-load sub-elements of the `' . $field->name . '` field.<br>'
-            . '`{% set entries = craft.entries.with([\'' . $field->handle . '\']).all() %}`<br>'
+            . '`{% set entries = craft.entries.with([\'' . $field->handle . '\']).collect() %}`<br>'
             . '<a href="https://craftcms.com/docs/4.x/dev/eager-loading-elements.html" class="go" target="_blank">Docs</a>';
 
         $this->_hints[$key] = $hint;
@@ -194,28 +194,35 @@ class HintsService extends Component
     /**
      * Returns a new hint with the template and line number of the rendered template.
      */
-    private function _getHintWithTemplateLine(): ?HintModel
+    private function _getHintWithTemplateLine(string $fieldHandle): ?HintModel
     {
-        // Get the debug backtrace
         $traces = debug_backtrace();
-
-        // Get template class filename
         $reflector = new ReflectionClassAlias(Template::class);
-        $filename = $reflector->getFileName();
+        $templateClassFilename = $reflector->getFileName();
 
         foreach ($traces as $key => $trace) {
-            if (!empty($trace['file']) && $trace['file'] == $filename) {
-                $templateObject = $trace['object'] ?? null;
+            if (!empty($trace['file']) && $trace['file'] == $templateClassFilename) {
+                $template = $trace['object'] ?? null;
 
-                if ($templateObject instanceof Template) {
-                    $path = $templateObject->getSourceContext()->getPath();
-                    $template = str_replace(Craft::getAlias('@templates/'), '', $path);
+                if ($template instanceof Template) {
+                    $path = $template->getSourceContext()->getPath();
+                    $templatePath = str_replace(Craft::getAlias('@templates/'), '', $path);
                     $templateCodeLine = $traces[$key - 1]['line'] ?? null;
-                    $line = $this->_findTemplateLine($templateObject, $templateCodeLine);
+                    $line = $this->_findTemplateLine($template, $templateCodeLine);
 
-                    if ($template && $line) {
+                    // If the variable name on which we call the field was passed
+                    // into the template via the variables array, then this is likely
+                    // a route variable (e.g. an entry URL) and should be ignored.
+                    $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
+                    preg_match('/ (\S+?)\.' . $fieldHandle . '/', $code, $matches);
+                    $variableName = $matches[1] ?? null;
+                    if ($variableName && !empty($trace['args'][0]['variables'][$variableName])) {
+                        return null;
+                    }
+
+                    if ($templatePath && $line) {
                         return new HintModel([
-                            'template' => $template,
+                            'template' => $templatePath,
                             'line' => $line,
                         ]);
                     }
