@@ -28,7 +28,9 @@ class Install extends Migration
                 'uid' => $this->uid(),
             ]);
 
-            $this->createIndex(null, HintRecord::tableName(), ['fieldId', 'template', 'line'], true);
+            // Don't put the line number in the index to avoid duplicate hints
+            // appearing when templates are edited and lines shifted around.
+            $this->createIndex(null, HintRecord::tableName(), ['fieldId', 'template'], true);
         }
 
         return true;

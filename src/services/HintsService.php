@@ -175,13 +175,20 @@ class HintsService extends Component
             return;
         }
 
+        $key = $fieldId . $hint->template;
+
+        // Don't continue if a hint with the key already exists.
+        if (!empty($this->_hints[$key])) {
+            return;
+        }
+
         $hint->fieldId = $fieldId;
         $hint->message = 'Eager-load the `' . $field->name . '` field.';
         $hint->info = 'Use the `with` parameter to eager-load sub-elements of the `' . $field->name . '` field.<br>'
             . '`{% set entries = craft.entries.with([\'' . $field->handle . '\']).all() %}`<br>'
             . '<a href="https://craftcms.com/docs/4.x/dev/eager-loading-elements.html" class="go" target="_blank">Docs</a>';
 
-        $this->_hints[$fieldId . $hint->template . $hint->line] = $hint;
+        $this->_hints[$key] = $hint;
     }
 
     /**
