@@ -55,8 +55,6 @@ class HintsUtility extends Utility
      */
     public static function contentHtml(): string
     {
-        Sprig::bootstrap();
-
         return Craft::$app->getView()->renderTemplate('blitz-hints/_utility', [
             'hints' => BlitzHints::getInstance()->hints->getAll(),
             'hasRouteVariables' => BlitzHints::getInstance()->hints->getTotalWithoutRouteVariables() > 0,
