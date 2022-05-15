@@ -20,9 +20,8 @@ class Install extends Migration
                 'id' => $this->primaryKey(),
                 'fieldId' => $this->integer(),
                 'template' => $this->string(),
+                'routeVariable' => $this->string(),
                 'line' => $this->integer(),
-                'message' => $this->text(),
-                'info' => $this->text(),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),
                 'uid' => $this->uid(),
@@ -30,7 +29,11 @@ class Install extends Migration
 
             // Don't put the line number in the index to avoid duplicate hints
             // appearing when templates are edited and lines shifted around.
-            $this->createIndex(null, HintRecord::tableName(), ['fieldId', 'template'], true);
+            $this->createIndex(null, HintRecord::tableName(), [
+                'fieldId',
+                'template',
+                'routeVariable',
+            ], true);
         }
 
         return true;

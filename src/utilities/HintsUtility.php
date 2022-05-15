@@ -8,6 +8,7 @@ namespace putyourlightson\blitzhints\utilities;
 use Craft;
 use craft\base\Utility;
 use putyourlightson\blitzhints\BlitzHints;
+use putyourlightson\sprig\Sprig;
 
 class HintsUtility extends Utility
 {
@@ -46,7 +47,7 @@ class HintsUtility extends Utility
      */
     public static function badgeCount(): int
     {
-        return BlitzHints::getInstance()->hints->getTotal();
+        return BlitzHints::getInstance()->hints->getTotalWithoutRouteVariables();
     }
 
     /**
@@ -54,8 +55,11 @@ class HintsUtility extends Utility
      */
     public static function contentHtml(): string
     {
+        Sprig::bootstrap();
+
         return Craft::$app->getView()->renderTemplate('blitz-hints/_utility', [
             'hints' => BlitzHints::getInstance()->hints->getAll(),
+            'hasRouteVariables' => BlitzHints::getInstance()->hints->getTotalWithoutRouteVariables() > 0,
         ]);
     }
 }

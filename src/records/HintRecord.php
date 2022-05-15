@@ -12,9 +12,8 @@ use DateTime;
  * @property int $id
  * @property int $fieldId
  * @property string $template
- * @property string $line
- * @property string $message
- * @property string $info
+ * @property string $routeVariable
+ * @property int $line
  * @property DateTime $lastUpdated
  */
 class HintRecord extends ActiveRecord

@@ -5,6 +5,7 @@
 
 namespace putyourlightson\blitzhints\models;
 
+use craft\base\FieldInterface;
 use craft\base\Model;
 use DateTime;
 
@@ -21,6 +22,11 @@ class HintModel extends Model
     public ?int $fieldId = null;
 
     /**
+     * @var FieldInterface|null
+     */
+    public ?FieldInterface $field = null;
+
+    /**
      * @var string|null
      */
     public ?string $template = null;
@@ -28,17 +34,12 @@ class HintModel extends Model
     /**
      * @var string|null
      */
-    public ?string $line = null;
+    public ?string $routeVariable = null;
 
     /**
-     * @var string|null
+     * @var int|null
      */
-    public ?string $message = null;
-
-    /**
-     * @var string|null
-     */
-    public ?string $info = null;
+    public ?int $line = null;
 
     /**
      * @var DateTime|null

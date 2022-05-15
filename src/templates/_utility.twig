@@ -1,12 +1,25 @@
+{% import '_includes/forms' as forms %}
+
+{% set showRouteVariables = craft.app.request.get('showRouteVariables') %}
+
 <form action="" method="post">
 
     {{ csrfInput() }}
 
     {% if hints|length %}
-        <div class="buttons first">
+        <div class="buttons first flex-justify">
             <a class="btn submit formsubmit" data-action="blitz-hints/hints/clear-all">
                 {{ "Clear all"|t('app') }}
             </a>
+
+            {% if hasRouteVariables %}
+                {{ forms.lightswitch({
+                    label: 'Show Route Variables',
+                    name: showRouteVariables,
+                    on: showRouteVariables,
+                    toggle: '.routeVariable',
+                }) }}
+            {% endif %}
         </div>
     {% endif %}
 
@@ -28,18 +41,35 @@
                 </thead>
                 <tbody>
                 {% for hint in hints %}
-                    <tr data-id="{{ hint.id }}">
+                    <tr class="{{ hint.routeVariable ? 'routeVariable hidden' }}" data-id="{{ hint.id }}">
                         <td>
-                            {{ hint.message|md|replace({'<p>': '', '</p>': ''})|raw }}
-                            {% if hint.info %}
-                                <span class="info" style="vertical-align: top;">{{ hint.info|md|replace({'<p>': '', '</p>': ''})|raw }}</span>
+                            {% if hint.routeVariable %}
+                                Eager-load the <code>{{ hint.routeVariable }}</code> route variable.
+                                <span class="info" style="vertical-align: top;">
+                                    Eager-load elements of the <code>{{ hint.field.name }}</code> field on the auto-injected route variable <code>{{ hint.routeVariable }}</code>, for example:
+                                    <br>
+                                    <code>&#123;% do craft.app.elements.eagerLoadElements(className({{ hint.routeVariable }}), [{{ hint.routeVariable }}], ['{{ hint.field.handle }}']) %&#125;</code>
+                                    <br>
+                                    <a href="https://docs.craftcms.com/api/v4/craft-services-elements.html#method-eagerloadelements" class="go" target="_blank">Docs</a>
+                                </span>
+                            {% else %}
+                                Eager-load the <code>{{ hint.field.name }}</code> field.
+                                <span class="info" style="vertical-align: top;">
+                                    Eager-load elements of the <code>{{ hint.field.name }}</code> field using the <code>with</code> parameter, for example:
+                                    <br>
+                                    <code>&#123;% set entries = craft.entries.with(['{{ hint.field.handle }}']).collect() %&#125;</code>
+                                    <br>
+                                    <a href="https://craftcms.com/docs/4.x/dev/eager-loading-elements.html" class="go" target="_blank">Docs</a>
+                                </span>
                             {% endif %}
                         </td>
                         <td class="code">
                             {{ hint.template|e|replace('/', '/<wbr>')|raw }}
                             {{- hint.line ? ':' ~ hint.line }}
                         </td>
-                        <td>{{ hint.dateUpdated|timestamp }}</td>
+                        <td>
+                            {{ hint.dateUpdated|timestamp }}
+                        </td>
                         <td>
                             <a class="delete icon formsubmit" data-action="blitz-hints/hints/clear" data-param="id" data-value="{{ hint.id }}" title="{{ 'Delete'|t('app') }}" role="button"></a>
                         </td>

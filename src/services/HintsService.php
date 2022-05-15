@@ -11,6 +11,7 @@ namespace putyourlightson\blitzhints\services;
 
 use Craft;
 use craft\base\Component;
+use craft\base\FieldInterface;
 use craft\elements\db\ElementQuery;
 use craft\elements\db\MatrixBlockQuery;
 use craft\services\Deprecator;
@@ -20,8 +21,9 @@ use ReflectionClass as ReflectionClassAlias;
 use Twig\Template;
 
 /**
- * @property int $total
- * @property HintModel[] $all
+ * @property-read HintModel[] $all
+ * @property-read int $total
+ * @property-read int $totalWithoutRouteVariables
  */
 class HintsService extends Component
 {
@@ -36,6 +38,19 @@ class HintsService extends Component
     public function getTotal(): int
     {
         return HintRecord::find()->count();
+    }
+
+    /**
+     * Gets total hints without route variables.
+     */
+    public function getTotalWithoutRouteVariables(): int
+    {
+        return HintRecord::find()
+            ->where(['and',
+                ['not', ['routeVariable' => null]],
+                ['not', ['routeVariable' => '']],
+            ])
+            ->count();
     }
 
     /**
@@ -54,7 +69,12 @@ class HintsService extends Component
         foreach ($hintRecords as $record) {
             $hint = new HintModel();
             $hint->setAttributes($record->getAttributes(), false);
-            $hints[] = $hint;
+
+            $field = Craft::$app->getFields()->getFieldById($hint->fieldId);
+            if ($field) {
+                $hint->field = $field;
+                $hints[] = $hint;
+            }
         }
 
         return $hints;
@@ -107,9 +127,8 @@ class HintsService extends Component
                     [
                         'fieldId' => $hint->fieldId,
                         'template' => $hint->template,
+                        'routeVariable' => $hint->routeVariable,
                         'line' => $hint->line,
-                        'message' => $hint->message,
-                        'info' => $hint->info,
                     ])
                 ->execute();
         }
@@ -169,7 +188,7 @@ class HintsService extends Component
             return;
         }
 
-        $hint = $this->_getHintWithTemplateLine($field->handle);
+        $hint = $this->_getHintWithTemplateLine($field);
 
         if ($hint === null) {
             return;
@@ -182,19 +201,13 @@ class HintsService extends Component
             return;
         }
 
-        $hint->fieldId = $fieldId;
-        $hint->message = 'Eager-load the `' . $field->name . '` field.';
-        $hint->info = 'Use the `with` parameter to eager-load sub-elements of the `' . $field->name . '` field.<br>'
-            . '`{% set entries = craft.entries.with([\'' . $field->handle . '\']).collect() %}`<br>'
-            . '<a href="https://craftcms.com/docs/4.x/dev/eager-loading-elements.html" class="go" target="_blank">Docs</a>';
-
         $this->_hints[$key] = $hint;
     }
 
     /**
      * Returns a new hint with the template and line number of the rendered template.
      */
-    private function _getHintWithTemplateLine(string $fieldHandle): ?HintModel
+    private function _getHintWithTemplateLine(FieldInterface $field): ?HintModel
     {
         $traces = debug_backtrace();
         $reflector = new ReflectionClassAlias(Template::class);
@@ -210,21 +223,21 @@ class HintsService extends Component
                     $templateCodeLine = $traces[$key - 1]['line'] ?? null;
                     $line = $this->_findTemplateLine($template, $templateCodeLine);
 
-                    // If the variable name on which we call the field was passed
-                    // into the template via the variables array, then this is likely
-                    // a route variable (e.g. an entry URL) and should be ignored.
-                    $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
-                    preg_match('/ (\S+?)\.' . $fieldHandle . '/', $code, $matches);
-                    $variableName = $matches[1] ?? null;
-                    if ($variableName && !empty($trace['args'][0]['variables'][$variableName])) {
-                        return null;
-                    }
-
                     if ($templatePath && $line) {
-                        return new HintModel([
+                        $hint = new HintModel([
+                            'fieldId' => $field->id,
                             'template' => $templatePath,
                             'line' => $line,
                         ]);
+
+                        $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
+                        preg_match('/ (\S+?)\.' . $field->handle . '/', $code, $matches);
+                        $routeVariable = $matches[1] ?? null;
+                        if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
+                            $hint->routeVariable = $routeVariable;
+                        }
+
+                        return $hint;
                     }
                 }
             }
