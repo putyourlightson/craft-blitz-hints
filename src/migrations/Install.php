@@ -18,9 +18,9 @@ class Install extends Migration
         if (!$this->db->tableExists(HintRecord::tableName())) {
             $this->createTable(HintRecord::tableName(), [
                 'id' => $this->primaryKey(),
-                'fieldId' => $this->integer(),
-                'template' => $this->string(),
-                'routeVariable' => $this->string(),
+                'fieldId' => $this->integer()->notNull(),
+                'template' => $this->string()->notNull(),
+                'routeVariable' => $this->string()->notNull(),
                 'line' => $this->integer(),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),

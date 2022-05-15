@@ -46,10 +46,7 @@ class HintsService extends Component
     public function getTotalWithoutRouteVariables(): int
     {
         return HintRecord::find()
-            ->where(['and',
-                ['not', ['routeVariable' => null]],
-                ['not', ['routeVariable' => '']],
-            ])
+            ->where(['not', ['routeVariable' => '']])
             ->count();
     }
 
@@ -128,6 +125,9 @@ class HintsService extends Component
                         'fieldId' => $hint->fieldId,
                         'template' => $hint->template,
                         'routeVariable' => $hint->routeVariable,
+                        'line' => $hint->line,
+                    ],
+                    [
                         'line' => $hint->line,
                     ])
                 ->execute();

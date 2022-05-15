@@ -27,14 +27,14 @@ class HintModel extends Model
     public ?FieldInterface $field = null;
 
     /**
-     * @var string|null
+     * @var string
      */
-    public ?string $template = null;
+    public string $template = '';
 
     /**
-     * @var string|null
+     * @var string
      */
-    public ?string $routeVariable = null;
+    public string $routeVariable = '';
 
     /**
      * @var int|null
