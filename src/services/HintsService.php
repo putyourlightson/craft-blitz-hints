@@ -38,7 +38,7 @@ class HintsService extends Component
     private ?string $_templateClassFilename = null;
 
     /**
-     * Gets total hints.
+     * Returns the total hints.
      */
     public function getTotal(): int
     {
@@ -46,13 +46,23 @@ class HintsService extends Component
     }
 
     /**
-     * Gets total hints without route variables.
+     * Returns the total hints without route variables.
      */
     public function getTotalWithoutRouteVariables(): int
     {
         return HintRecord::find()
             ->where(['routeVariable' => ''])
             ->count();
+    }
+
+    /**
+     * Returns whether there are hints with route variables.
+     */
+    public function hasRouteVariables(): bool
+    {
+        return HintRecord::find()
+            ->where(['not', ['routeVariable' => '']])
+            ->exists();
     }
 
     /**
@@ -249,7 +259,7 @@ class HintsService extends Component
     /**
      * Returns the template class filename.
      */
-    private function _getTemplateClassFilename(): bool
+    private function _getTemplateClassFilename(): string
     {
         if ($this->_templateClassFilename !== null) {
             return $this->_templateClassFilename;
@@ -266,12 +276,13 @@ class HintsService extends Component
      */
     private function _getTraceTemplate(array $trace): ?Template
     {
+        // Ensure this is a template class file.
         if (empty($trace['file']) || $trace['file'] != $this->_getTemplateClassFilename()) {
             return null;
         }
 
         // Ensure this is a compiled template and not a dynamic one.
-        if ($trace['class'] == 'Twig\\Template') {
+        if (empty($trace['class']) || $trace['class'] == 'Twig\\Template') {
             return null;
         }
 

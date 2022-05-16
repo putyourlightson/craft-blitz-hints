@@ -1,7 +1,5 @@
 {% import '_includes/forms' as forms %}
 
-{% set showRouteVariables = craft.app.request.get('showRouteVariables') %}
-
 <form action="" method="post">
 
     {{ csrfInput() }}
@@ -15,9 +13,8 @@
             {% if hasRouteVariables %}
                 {{ forms.lightswitch({
                     label: 'Show Route Variable Hints',
-                    name: showRouteVariables,
-                    on: showRouteVariables,
-                    toggle: '.routeVariable',
+                    on: false,
+                    toggle: '.routeVariableHint',
                 }) }}
             {% endif %}
         </div>
@@ -41,7 +38,7 @@
                 </thead>
                 <tbody>
                 {% for hint in hints %}
-                    <tr class="{{ hint.routeVariable ? 'routeVariable hidden' }}" data-id="{{ hint.id }}">
+                    <tr class="{{ hint.routeVariable ? 'routeVariableHint hidden' }}" data-id="{{ hint.id }}">
                         <td>
                             {% if hint.routeVariable %}
                                 Eager-load the <code>{{ hint.routeVariable }}</code> route variable.
