@@ -33,6 +33,11 @@ class HintsService extends Component
     private array $_hints = [];
 
     /**
+     * @var string|null
+     */
+    private ?string $_templateClassFilename = null;
+
+    /**
      * Gets total hints.
      */
     public function getTotal(): int
@@ -46,7 +51,7 @@ class HintsService extends Component
     public function getTotalWithoutRouteVariables(): int
     {
         return HintRecord::find()
-            ->where(['not', ['routeVariable' => '']])
+            ->where(['routeVariable' => ''])
             ->count();
     }
 
@@ -188,13 +193,13 @@ class HintsService extends Component
             return;
         }
 
-        $hint = $this->_getHintWithTemplateLine($field);
+        $hint = $this->_createHintWithTemplateLine($field);
 
         if ($hint === null) {
             return;
         }
 
-        $key = $fieldId . '-' . $hint->template;
+        $key = implode('-', [$fieldId, $hint->template, $hint->routeVariable]);
 
         // Don't continue if a hint with the key already exists.
         if (!empty($this->_hints[$key])) {
@@ -207,43 +212,76 @@ class HintsService extends Component
     /**
      * Returns a new hint with the template and line number of the rendered template.
      */
-    private function _getHintWithTemplateLine(FieldInterface $field): ?HintModel
+    private function _createHintWithTemplateLine(FieldInterface $field): ?HintModel
     {
         $traces = debug_backtrace();
-        $reflector = new ReflectionClassAlias(Template::class);
-        $templateClassFilename = $reflector->getFileName();
 
         foreach ($traces as $key => $trace) {
-            if (!empty($trace['file']) && $trace['file'] == $templateClassFilename) {
-                $template = $trace['object'] ?? null;
+            $template = $this->_getTraceTemplate($trace);
+            if ($template) {
+                $path = $template->getSourceContext()->getPath();
+                $templatePath = str_replace(Craft::getAlias('@templates/'), '', $path);
+                $templateCodeLine = $traces[$key - 1]['line'] ?? null;
+                $line = $this->_findTemplateLine($template, $templateCodeLine);
 
-                if ($template instanceof Template) {
-                    $path = $template->getSourceContext()->getPath();
-                    $templatePath = str_replace(Craft::getAlias('@templates/'), '', $path);
-                    $templateCodeLine = $traces[$key - 1]['line'] ?? null;
-                    $line = $this->_findTemplateLine($template, $templateCodeLine);
+                if ($templatePath && $line) {
+                    $hint = new HintModel([
+                        'fieldId' => $field->id,
+                        'template' => $templatePath,
+                        'line' => $line,
+                    ]);
 
-                    if ($templatePath && $line) {
-                        $hint = new HintModel([
-                            'fieldId' => $field->id,
-                            'template' => $templatePath,
-                            'line' => $line,
-                        ]);
-
-                        $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
-                        preg_match('/ (\S+?)\.' . $field->handle . '/', $code, $matches);
-                        $routeVariable = $matches[1] ?? null;
-                        if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
-                            $hint->routeVariable = $routeVariable;
-                        }
-
-                        return $hint;
+                    $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
+                    preg_match('/ (\S+?)\.' . $field->handle . '/', $code, $matches);
+                    $routeVariable = $matches[1] ?? null;
+                    if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
+                        $hint->routeVariable = $routeVariable;
                     }
+
+                    return $hint;
                 }
             }
         }
 
         return null;
+    }
+
+    /**
+     * Returns the template class filename.
+     */
+    private function _getTemplateClassFilename(): bool
+    {
+        if ($this->_templateClassFilename !== null) {
+            return $this->_templateClassFilename;
+        }
+
+        $reflector = new ReflectionClassAlias(Template::class);
+        $this->_templateClassFilename = $reflector->getFileName();
+
+        return $this->_templateClassFilename;
+    }
+
+    /**
+     * Returns a template from the trace.
+     */
+    private function _getTraceTemplate(array $trace): ?Template
+    {
+        if (empty($trace['file']) || $trace['file'] != $this->_getTemplateClassFilename()) {
+            return null;
+        }
+
+        // Ensure this is a compiled template and not a dynamic one.
+        if ($trace['class'] == 'Twig\\Template') {
+            return null;
+        }
+
+        $template = $trace['object'] ?? null;
+
+        if (!($template instanceof Template)) {
+            return null;
+        }
+
+        return $template;
     }
 
     /**
