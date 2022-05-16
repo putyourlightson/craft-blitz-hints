@@ -1,7 +1,7 @@
 {
     "name": "putyourlightson/craft-blitz-hints",
     "description": "Provides templating performance hints.",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "type": "craft-module",
     "license": "mit",
     "require": {

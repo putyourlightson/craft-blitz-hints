@@ -241,9 +241,13 @@ class HintsService extends Component
                         'line' => $line,
                     ]);
 
-                    $code = explode("\n", $template->getSourceContext()->getCode())[$line - 1] ?? '';
-                    preg_match('/ (\S+?)\.' . $field->handle . '/', $code, $matches);
+                    // Read the contents of the template file, since the code cannot
+                    // be retrieved from the source context with `devMode` disabled.
+                    $templateCode = file($path);
+                    $code = $templateCode[$line - 1] ?? '';
+                    preg_match('/([\w]+?)\.' . $field->handle . '/', $code, $matches);
                     $routeVariable = $matches[1] ?? null;
+
                     if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
                         $hint->routeVariable = $routeVariable;
                     }
@@ -300,7 +304,7 @@ class HintsService extends Component
      *
      * @see Deprecator::_findTemplateLine()
      */
-    private function _findTemplateLine(Template $template, int $actualCodeLine = null)
+    private function _findTemplateLine(Template $template, int $actualCodeLine = null): ?int
     {
         if ($actualCodeLine === null) {
             return null;
