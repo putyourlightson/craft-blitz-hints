@@ -117,8 +117,7 @@ class HintsService extends Component
     {
         if ($elementQuery instanceof MatrixBlockQuery) {
             $this->_checkMatrixRelations($elementQuery);
-        }
-        else {
+        } else {
             $this->_checkBaseRelations($elementQuery);
         }
     }
