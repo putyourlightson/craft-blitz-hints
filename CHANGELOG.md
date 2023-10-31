@@ -1,6 +1,6 @@
 # Release Notes for Blitz Hints
 
-## 1.0.3 - 2023-10-31
+## 1.1.0 - 2023-10-31
 
 ### Changed
 
