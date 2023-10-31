@@ -74,6 +74,7 @@ class HintsService extends Component
     {
         $hints = [];
 
+        /** @var HintRecord[] $hintRecords */
         $hintRecords = HintRecord::find()
             ->orderBy(['dateUpdated' => SORT_DESC])
             ->all();
@@ -124,8 +125,6 @@ class HintsService extends Component
 
     /**
      * Saves any hints that have been prepared.
-     *
-     * @noinspection MissedFieldInspection
      */
     public function save(): void
     {
@@ -150,6 +149,7 @@ class HintsService extends Component
 
     /**
      * Checks base relations.
+     *
      * @see \craft\fields\BaseRelationField::normalizeValue
      */
     private function _checkBaseRelations(ElementQuery $elementQuery): void
@@ -178,7 +178,8 @@ class HintsService extends Component
 
     /**
      * Checks matrix relations.
-     * @see \craft\elements\db\MatrixBlockQuery::beforePrepare
+     *
+     * @see MatrixBlockQuery::beforePrepare
      */
     private function _checkMatrixRelations(MatrixBlockQuery $elementQuery): void
     {
@@ -202,15 +203,22 @@ class HintsService extends Component
             return;
         }
 
-        $hint = $this->_createHintWithTemplateLine($field);
+        $hint = $this->createHintWithTemplateLine($field);
 
         if ($hint === null) {
             return;
         }
 
+        // Don’t continue if the template path is in the vendor folder path.
+        // https://github.com/putyourlightson/craft-blitz/issues/574
+        $vendorFolderPath = Craft::getAlias('@vendor');
+        if (str_contains($hint->template, $vendorFolderPath)) {
+            return;
+        }
+
         $key = implode('-', [$fieldId, $hint->template, $hint->routeVariable]);
 
-        // Don't continue if a hint with the key already exists.
+        // Don’t continue if a hint with the key already exists.
         if (!empty($this->_hints[$key])) {
             return;
         }
@@ -220,8 +228,10 @@ class HintsService extends Component
 
     /**
      * Returns a new hint with the template and line number of the rendered template.
+     *
+     * This method must not be `private` so that we can mock it in our tests.
      */
-    private function _createHintWithTemplateLine(FieldInterface $field): ?HintModel
+    protected function createHintWithTemplateLine(FieldInterface $field): ?HintModel
     {
         $traces = debug_backtrace();
 

@@ -58,7 +58,7 @@ class BlitzHints extends Module
     /**
      * @inheritdoc
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -71,7 +71,7 @@ class BlitzHints extends Module
     /**
      * Registers components
      */
-    private function _registerComponents()
+    private function _registerComponents(): void
     {
         $this->setComponents([
             'hints' => HintsService::class,
@@ -81,7 +81,7 @@ class BlitzHints extends Module
     /**
      * Registers events
      */
-    private function _registerEvents()
+    private function _registerEvents(): void
     {
         // Ignore CP requests
         if (Craft::$app->getRequest()->getIsCpRequest()) {
@@ -112,7 +112,7 @@ class BlitzHints extends Module
     /**
      * Registers template roots.
      */
-    private function _registerTemplateRoots()
+    private function _registerTemplateRoots(): void
     {
         Event::on(
             View::class, View::EVENT_REGISTER_CP_TEMPLATE_ROOTS,
@@ -125,7 +125,7 @@ class BlitzHints extends Module
     /**
      * Registers utilities
      */
-    private function _registerUtilities()
+    private function _registerUtilities(): void
     {
         Event::on(Utilities::class, Utilities::EVENT_REGISTER_UTILITY_TYPES,
             function(RegisterComponentTypesEvent $event) {

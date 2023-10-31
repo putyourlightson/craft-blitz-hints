@@ -5,15 +5,15 @@
 
 # Blitz Hints Module for Craft CMS
 
-This module provides the hint functionality and utility for the [Blitz](https://putyourlightson.com/plugins/blitz) and [Blitz Recommendations](https://putyourlightson.com/plugins/blitz-recommendations) plugins for [Craft CMS](https://craftcms.com/).  
+This module provides the hint functionality and utility for the [Blitz](https://putyourlightson.com/plugins/blitz) and [Blitz Hintz](https://putyourlightson.com/plugins/blitz-hintz) plugins for [Craft CMS](https://craftcms.com/).
 
 First require the package in your plugin/module's `composer.json` file.
 
 ```json
 {
-    "require": {
-        "putyourlightson/craft-blitz-hints": "^1.0"
-    }
+  "require": {
+    "putyourlightson/craft-blitz-hints": "^1.0"
+  }
 }
 ```
 

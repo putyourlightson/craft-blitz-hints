@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="0.178534">
+    <testsuite name="P\Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="0.178534">
+      <testcase name="Hints in templates are saved" class="Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" classname="Users.ben.Sites.plugins.craftv4.craftblitzhints.tests.pest.Feature.HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" assertions="1" time="0.175943"/>
+      <testcase name="Hints in templates that exist in the vendor folder path are ignored" class="Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" classname="Users.ben.Sites.plugins.craftv4.craftblitzhints.tests.pest.Feature.HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" assertions="1" time="0.002592"/>
+    </testsuite>
+  </testsuite>
+</testsuites>
