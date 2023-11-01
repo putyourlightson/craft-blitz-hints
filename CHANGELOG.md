@@ -1,5 +1,11 @@
 # Release Notes for Blitz Hints
 
+## 1.1.1 - 2023-11-01
+
+### Changed
+
+- Changed the module and utility icon.
+
 ## 1.1.0 - 2023-10-31
 
 ### Changed
