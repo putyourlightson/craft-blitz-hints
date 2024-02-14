@@ -13,7 +13,6 @@ use Craft;
 use craft\base\Component;
 use craft\base\FieldInterface;
 use craft\elements\db\ElementQuery;
-use craft\elements\db\MatrixBlockQuery;
 use craft\services\Deprecator;
 use putyourlightson\blitzhints\models\HintModel;
 use putyourlightson\blitzhints\records\HintRecord;
@@ -116,10 +115,25 @@ class HintsService extends Component
      */
     public function checkElementQuery(ElementQuery $elementQuery): void
     {
-        if ($elementQuery instanceof MatrixBlockQuery) {
-            $this->_checkMatrixRelations($elementQuery);
-        } else {
-            $this->_checkBaseRelations($elementQuery);
+        $join = $elementQuery->join[0] ?? null;
+
+        if ($join === null) {
+            return;
+        }
+
+        $relationTypes = [
+            ['relations' => '{{%relations}}'],
+            '{{%relations}} relations',
+        ];
+
+        if ($join[0] == 'INNER JOIN' && in_array($join[1], $relationTypes)) {
+            $fieldId = $join[2][2]['relations.fieldId'] ?? null;
+
+            if (empty($fieldId)) {
+                return;
+            }
+
+            $this->_addFieldHint($fieldId);
         }
     }
 
@@ -145,51 +159,6 @@ class HintsService extends Component
                     ])
                 ->execute();
         }
-    }
-
-    /**
-     * Checks base relations.
-     *
-     * @see \craft\fields\BaseRelationField::normalizeValue
-     */
-    private function _checkBaseRelations(ElementQuery $elementQuery): void
-    {
-        $join = $elementQuery->join[0] ?? null;
-
-        if ($join === null) {
-            return;
-        }
-
-        $relationTypes = [
-            ['relations' => '{{%relations}}'],
-            '{{%relations}} relations',
-        ];
-
-        if ($join[0] == 'INNER JOIN' && in_array($join[1], $relationTypes)) {
-            $fieldId = $join[2][2]['relations.fieldId'] ?? null;
-
-            if (empty($fieldId)) {
-                return;
-            }
-
-            $this->_addFieldHint($fieldId);
-        }
-    }
-
-    /**
-     * Checks matrix relations.
-     *
-     * @see MatrixBlockQuery::beforePrepare
-     */
-    private function _checkMatrixRelations(MatrixBlockQuery $elementQuery): void
-    {
-        if (empty($elementQuery->fieldId) || empty($elementQuery->ownerId)) {
-            return;
-        }
-
-        $fieldId = is_array($elementQuery->fieldId) ? $elementQuery->fieldId[0] : $elementQuery->fieldId;
-
-        $this->_addFieldHint($fieldId);
     }
 
     /**
