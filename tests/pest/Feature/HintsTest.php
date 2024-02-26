@@ -10,13 +10,6 @@ beforeEach(function() {
     HintRecord::deleteAll();
 });
 
-test('Hint is recorded for a related element query that is lazy-loaded', function() {
-    saveHint();
-
-    expect(HintRecord::find()->count())
-        ->toEqual(1);
-});
-
 test('Hint is recorded for a related element query that is lazy-loaded with the correct field ID', function() {
     saveHint();
 
@@ -24,8 +17,8 @@ test('Hint is recorded for a related element query that is lazy-loaded with the 
     $hint = HintRecord::find()->one();
     $field = Craft::$app->getFields()->getFieldByHandle('relatedTo');
 
-    expect($hint)
-        ->not()->toBeNull()
+    expect(HintRecord::find()->count())
+        ->toBe(1)
         ->and($hint->fieldId)
         ->toEqual($field->id);
 });
