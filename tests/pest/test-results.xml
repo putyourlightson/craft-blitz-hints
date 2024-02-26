@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="0.178534">
-    <testsuite name="P\Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" tests="2" assertions="2" errors="0" warnings="0" failures="0" skipped="0" time="0.178534">
-      <testcase name="Hints in templates are saved" class="Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" classname="Users.ben.Sites.plugins.craftv4.craftblitzhints.tests.pest.Feature.HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" assertions="1" time="0.175943"/>
-      <testcase name="Hints in templates that exist in the vendor folder path are ignored" class="Users\ben\Sites\plugins\craftv4\craftblitzhints\tests\pest\Feature\HintsTest" classname="Users.ben.Sites.plugins.craftv4.craftblitzhints.tests.pest.Feature.HintsTest" file="/Users/ben/Sites/plugins/craft_v4/craft-blitz-hints/tests/pest/Feature/HintsTest.php" assertions="1" time="0.002592"/>
+  <testsuite name="/var/www/html/plugins/craft-blitz-hints/tests/pest/phpunit.xml" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.234639">
+    <testsuite name="Test Suite" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.234639">
+      <testsuite name="Plugins\craftblitzhints\tests\pest\Feature\HintsTest" file="plugins/craft-blitz-hints/tests/pest/Feature/HintsTest.php" tests="2" assertions="2" errors="0" failures="0" skipped="0" time="0.234639">
+        <testcase name="Hint is recorded for a related element query that is lazy-loaded" file="plugins/craft-blitz-hints/tests/pest/Feature/HintsTest.php::Hint is recorded for a related element query that is lazy-loaded" class="Plugins\craftblitzhints\tests\pest\Feature\HintsTest" classname="Plugins.craftblitzhints.tests.pest.Feature.HintsTest" assertions="1" time="0.230841"/>
+        <testcase name="Hint is not recorded for a related element query that is lazy-loaded in a template that exist in the vendor folder path" file="plugins/craft-blitz-hints/tests/pest/Feature/HintsTest.php::Hint is not recorded for a related element query that is lazy-loaded in a template that exist in the vendor folder path" class="Plugins\craftblitzhints\tests\pest\Feature\HintsTest" classname="Plugins.craftblitzhints.tests.pest.Feature.HintsTest" assertions="1" time="0.003798"/>
+      </testsuite>
     </testsuite>
   </testsuite>
 </testsuites>

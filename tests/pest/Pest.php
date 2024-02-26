@@ -1,6 +1,5 @@
 <?php
 
-use craft\elements\db\ElementQuery;
 use craft\elements\Entry;
 use markhuot\craftpest\test\TestCase;
 use putyourlightson\blitzhints\BlitzHints;
@@ -18,7 +17,8 @@ use putyourlightson\blitzhints\services\HintsService;
 |
 */
 
-uses(TestCase::class)->in('./');
+uses(TestCase::class)
+    ->in('./');
 
 /*
 |--------------------------------------------------------------------------
@@ -48,9 +48,12 @@ uses(TestCase::class)->in('./');
 |
 */
 
-function saveHint(string $template): void
+function saveHint(?string $template = null): void
 {
-    $fieldId = Craft::$app->getFields()->getAllFields()[0]->id;
+    $template = $template ?? 'templates/test';
+    $elementQuery = Entry::find()->section('single')->one()->relatedTo;
+
+    $fieldId = Craft::$app->getFields()->getFieldByHandle('relatedTo')->id;
     $hint = new HintModel([
         'fieldId' => $fieldId,
         'template' => $template,
@@ -60,18 +63,6 @@ function saveHint(string $template): void
         ->shouldAllowMockingProtectedMethods();;
     $hints->shouldReceive('createHintWithTemplateLine')->andReturn($hint);
     BlitzHints::getInstance()->set('hints', $hints);
-
-    /**
-     * @see HintsService::_checkBaseRelations
-     */
-    $elementQuery = new ElementQuery(Entry::class);
-    $elementQuery->join = [
-        [
-            'INNER JOIN',
-            ['relations' => '{{%relations}}'],
-            [null, null, ['relations.fieldId' => $fieldId]],
-        ],
-    ];
 
     BlitzHints::getInstance()->hints->checkElementQuery($elementQuery);
     BlitzHints::getInstance()->hints->save();

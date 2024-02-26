@@ -10,5 +10,5 @@ This document outlines the test specification for the Blitz Hints module.
 
 _Tests hints functionality._
 
-![Pass](https://raw.githubusercontent.com/putyourlightson/craft-generate-test-spec/main/icons/pass.svg) Hints in templates are saved.  
-![Pass](https://raw.githubusercontent.com/putyourlightson/craft-generate-test-spec/main/icons/pass.svg) Hints in templates that exist in the vendor folder path are ignored.  
+![Pass](https://raw.githubusercontent.com/putyourlightson/craft-generate-test-spec/main/icons/pass.svg) Hint is recorded for a related element query that is lazy-loaded.  
+![Pass](https://raw.githubusercontent.com/putyourlightson/craft-generate-test-spec/main/icons/pass.svg) Hint is not recorded for a related element query that is lazy-loaded in a template that exist in the vendor folder path.  
