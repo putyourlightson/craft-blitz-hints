@@ -254,9 +254,7 @@ class HintsService extends Component
                             'stackTrace' => [$templatePath . ':' . $line],
                         ]);
                     } else {
-                        if ($template->getParent([]) !== null) {
-                            $hint->stackTrace[] = $templatePath . ':' . $line;
-                        }
+                        $hint->stackTrace[] = $templatePath . ':' . $line;
 
                         continue;
                     }
@@ -265,7 +263,7 @@ class HintsService extends Component
                     // be retrieved from the source context with `devMode` disabled.
                     $templateCode = file($this->_getTemplatePath($template));
                     $code = $templateCode[$line - 1] ?? '';
-                    preg_match('/([\w]+?)\.' . $field->handle . '/', $code, $matches);
+                    preg_match('/(\w+?)\.' . $field->handle . '/', $code, $matches);
                     $routeVariable = $matches[1] ?? null;
 
                     if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
