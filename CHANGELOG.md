@@ -1,5 +1,11 @@
 # Release Notes for Blitz Hints
 
+## 1.2.1 - 2024-03-11
+
+### Changed
+
+- The template stack trace is now updated if different for the same field-template combination.
+
 ## 1.2.0 - 2024-03-11
 
 ### Added

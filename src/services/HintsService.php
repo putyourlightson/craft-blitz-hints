@@ -143,6 +143,7 @@ class HintsService extends Component
                     ],
                     [
                         'line' => $hint->line,
+                        'stackTrace' => implode(',', $hint->stackTrace),
                     ])
                 ->execute();
         }
