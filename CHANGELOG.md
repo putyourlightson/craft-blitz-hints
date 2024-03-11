@@ -1,5 +1,11 @@
 # Release Notes for Blitz Hints
 
+## 1.2.0 - 2024-03-11
+
+### Added
+
+- Added a template stack trace to each hint ([#16](https://github.com/putyourlightson/craft-blitz-recommendations/issues/16)).
+
 ## 1.1.1 - 2023-11-01
 
 ### Changed

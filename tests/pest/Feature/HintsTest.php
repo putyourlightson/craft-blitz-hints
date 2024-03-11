@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Tests hints functionality.
+ * Tests the hint functionality.
  */
 
 use putyourlightson\blitzhints\records\HintRecord;

@@ -60,7 +60,8 @@ function saveHint(?string $template = null): void
     ]);
     $hints = Mockery::mock(HintsService::class)
         ->makePartial()
-        ->shouldAllowMockingProtectedMethods();;
+        ->shouldAllowMockingProtectedMethods();
+    ;
     $hints->shouldReceive('createHintWithTemplateLine')->andReturn($hint);
     BlitzHints::getInstance()->set('hints', $hints);
 

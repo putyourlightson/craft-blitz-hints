@@ -139,6 +139,7 @@ class HintsService extends Component
                         'template' => $hint->template,
                         'routeVariable' => $hint->routeVariable,
                         'line' => $hint->line,
+                        'stackTrace' => implode(',', $hint->stackTrace),
                     ],
                     [
                         'line' => $hint->line,
@@ -233,26 +234,35 @@ class HintsService extends Component
      */
     protected function createHintWithTemplateLine(FieldInterface $field): ?HintModel
     {
+        $hint = null;
         $traces = debug_backtrace();
 
         foreach ($traces as $key => $trace) {
             $template = $this->_getTraceTemplate($trace);
             if ($template) {
-                $path = $template->getSourceContext()->getPath();
-                $templatePath = str_replace(Craft::getAlias('@templates/'), '', $path);
+                $templatePath = $this->_getTemplateShortPath($template);
                 $templateCodeLine = $traces[$key - 1]['line'] ?? null;
                 $line = $this->_findTemplateLine($template, $templateCodeLine);
 
                 if ($templatePath && $line) {
-                    $hint = new HintModel([
-                        'fieldId' => $field->id,
-                        'template' => $templatePath,
-                        'line' => $line,
-                    ]);
+                    if ($hint === null) {
+                        $hint = new HintModel([
+                            'fieldId' => $field->id,
+                            'template' => $templatePath,
+                            'line' => $line,
+                            'stackTrace' => [$templatePath . ':' . $line],
+                        ]);
+                    } else {
+                        if ($template->getParent([]) !== null) {
+                            $hint->stackTrace[] = $templatePath . ':' . $line;
+                        }
+
+                        continue;
+                    }
 
                     // Read the contents of the template file, since the code cannot
                     // be retrieved from the source context with `devMode` disabled.
-                    $templateCode = file($path);
+                    $templateCode = file($this->_getTemplatePath($template));
                     $code = $templateCode[$line - 1] ?? '';
                     preg_match('/([\w]+?)\.' . $field->handle . '/', $code, $matches);
                     $routeVariable = $matches[1] ?? null;
@@ -260,13 +270,11 @@ class HintsService extends Component
                     if ($routeVariable && !empty($trace['args'][0]['variables'][$routeVariable])) {
                         $hint->routeVariable = $routeVariable;
                     }
-
-                    return $hint;
                 }
             }
         }
 
-        return null;
+        return $hint;
     }
 
     /**
@@ -306,6 +314,24 @@ class HintsService extends Component
         }
 
         return $template;
+    }
+
+    /**
+     * Returns a template’s path.
+     */
+    private function _getTemplatePath(Template $template): string
+    {
+        return $template->getSourceContext()->getPath();
+    }
+
+    /**
+     * Returns a template’s short path.
+     */
+    private function _getTemplateShortPath(Template $template): string
+    {
+        $path = $this->_getTemplatePath($template);
+
+        return str_replace(Craft::getAlias('@templates/'), '', $path);
     }
 
     /**

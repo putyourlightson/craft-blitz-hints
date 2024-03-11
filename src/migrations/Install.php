@@ -22,6 +22,7 @@ class Install extends Migration
                 'template' => $this->string()->notNull(),
                 'routeVariable' => $this->string()->notNull(),
                 'line' => $this->integer(),
+                'stackTrace' => $this->text(),
                 'dateCreated' => $this->dateTime()->notNull(),
                 'dateUpdated' => $this->dateTime()->notNull(),
                 'uid' => $this->uid(),

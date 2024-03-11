@@ -63,6 +63,19 @@
                         <td class="code">
                             {{ hint.template|e|replace('/', '/<wbr>')|raw }}
                             {{- hint.line ? ':' ~ hint.line }}
+                            <span class="info">
+                                {% for trace in hint.stackTrace %}
+                                    <code>
+                                        {% set index = loop.index0 %}
+                                        {% set output -%}
+                                            {% for i in 0..index %}→{% endfor %}
+                                            {{ trace|e|replace('/', '/<wbr>')|raw }}
+                                        {%- endset %}
+                                        {{ output|slice(1)|raw }}
+                                    </code>
+                                    <br>
+                                {% endfor %}
+                            </span>
                         </td>
                         <td>
                             {{ hint.dateUpdated|timestamp }}
