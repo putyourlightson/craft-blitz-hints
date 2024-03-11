@@ -65,13 +65,13 @@
                             {{- hint.line ? ':' ~ hint.line }}
                             <span class="info">
                                 {% for trace in hint.stackTrace %}
+                                    {% set index = loop.index0 %}
+                                    {% set output -%}
+                                        {% for i in 0..index %}→{% endfor %}
+                                    {%- endset %}
+                                    {{ output|slice(1)|raw }}
                                     <code>
-                                        {% set index = loop.index0 %}
-                                        {% set output -%}
-                                            {% for i in 0..index %}→{% endfor %}
-                                            {{ trace|e|replace('/', '/<wbr>')|raw }}
-                                        {%- endset %}
-                                        {{ output|slice(1)|raw }}
+                                        {{ trace|e|replace('/', '/<wbr>')|raw }}
                                     </code>
                                     <br>
                                 {% endfor %}
