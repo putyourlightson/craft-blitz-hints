@@ -1,5 +1,11 @@
 # Release Notes for Blitz Hints
 
+## 1.2.2 - 2024-03-12
+
+### Fixed
+
+- Fixed a bug that could throw an error when conditional variables were used in an `extends` tag ([#632](https://github.com/putyourlightson/craft-blitz/issues/632)).
+
 ## 1.2.1 - 2024-03-11
 
 ### Changed
